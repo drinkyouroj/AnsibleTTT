@@ -1,0 +1,8 @@
+project_repo: git@github.com:TwoThousandTimes/2000.git
+branch: master
+system_packages:
+ - nginx
+ - git
+ - php-fpm
+ - php55
+ - ImageMagick

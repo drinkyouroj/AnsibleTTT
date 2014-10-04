@@ -1,0 +1,46 @@
+---
+# This playbook is for restoring data.
+- hosts: ec2
+  remote_user: ec2-user
+  vars:
+    production: false
+    mongo_user: twothousand
+    mongo_pass: TT99!!!
+    mysql_user: twothousand
+    mysql_pass: TT99**
+  tasks:
+  - action: shell date '+%Y.%m.%d-%H.30.01'
+    register: mongodate
+
+  - action: shell date '+%Y.%m.%d-%H.00.01'
+    register: mydate
+
+  - mysql_user: name={{ mysql_user }} password={{ mysql_pass }} priv=twothousand.*:ALL state=present
+
+  - mongodb_user: database=database user={{ mongo_user }} password={{ mongo_pass }} roles=dbOwner state=present 
+
+  - s3: bucket=TTTservers object=/DB-backups/data03.twothousandtimes.com/mongodump-database-{{ mongodate.stdout }}.tar.gz mode=get dest=/home/ec2-user/
+    when: production
+    #when its not production,we'll just download the file using aws s3 methods.
+
+  - s3: bucket=TTTservers object=/DB-backups/data03.twothousandtimes.com/mysqldump-twothousand-{{ mydate.stdout }}.sql mode=get dest=/home/ec2-user/
+    when: production
+    #when its not production,we'll just download the file using aws s3 methods.
+
+  - copy: src=mongodump-database-{{ mongodate.stdout }}.tar.gz dest=/home/ec2-user/mongodump-database-{{ mongodate.stdout }}.tar.gz
+    when: not production
+    #Mongo copy
+
+  - copy: src=mysqldump-twothousand-{{ mydate.stdout }}.sql dest=/home/ec2-user/mysqldump-twothousand-{{ mydate.stdout }}.sql
+    when: not production
+    #MySQL copy
+
+  - file: path=/home/ec2-user/mongo state=directory
+
+  - unarchive: src=mongodump-database-{{ mongodate.stdout }}.tar.gz dest=/home/ec2-user/mongo
+
+  - name: Restore MongoDB Comments
+    command: mongorestore -u {{ mongo_user }} -p {{ mongo_pass }} --db database --dbpath /var/lib/mongo /home/ec2-user/mongo
+
+  - name: Restore MySQL
+    mysql_db: login_user=twothousand login_password=TT99** name=twothousand state=import target=/home/ec2-user/mysqldump-twothousand-{{ mydate.stdout }}.sql

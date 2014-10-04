@@ -1,0 +1,5 @@
+---
+project_name: Two Thousand Times
+project_root: /var/www/2000
+project_repo: git@github.com:TwoThousandTimes/2000.git
+branch: master
