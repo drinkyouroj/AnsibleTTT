@@ -23,17 +23,18 @@ class Ec2Controls(object):
 
         #set inventory
         self.group = os.environ['GROUP']
+        self.lbname = os.environ['LBNAME']
         self.get_servers()
         
         #its all the same to here.
         elb = boto.ec2.elb.connect_to_region('us-west-2')
         if self.args.dereg:
             for instance in self.hosts['ec2_instances']:
-                elb.deregister_instances('LB1',instance)
+                elb.deregister_instances(self.lbname,instance)
                 print('De-Registered '+ instance)
         else:
             for instance in self.hosts['ec2_instances']:
-                elb.register_instances('LB1',instance)
+                elb.register_instances(self.lbname,instance)
                 print('Registered '+ instance)
 
     def get_servers(self):
