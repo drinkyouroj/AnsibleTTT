@@ -15,9 +15,7 @@
   - action: shell date '+%Y.%m.%d-%H.00.01'
     register: mydate
 
-  - mysql_user: name={{ mysql_user }} password={{ mysql_pass }} priv=twothousand.*:ALL state=present
-
-  - mongodb_user: database=database user={{ mongo_user }} password={{ mongo_pass }} roles=dbOwner state=present 
+  - mongodb_user: login_user=superuser login_password=TT99!!! database=database user={{ mongo_user }} password={{ mongo_pass }} roles=dbOwner state=present 
 
   - s3: bucket=TTTservers object=/DB-backups/data03.twothousandtimes.com/mongodump-database-{{ mongodate.stdout }}.tar.gz mode=get dest=/home/ec2-user/
     when: production
@@ -27,20 +25,25 @@
     when: production
     #when its not production,we'll just download the file using aws s3 methods.
 
-  - copy: src=mongodump-database-{{ mongodate.stdout }}.tar.gz dest=/home/ec2-user/mongodump-database-{{ mongodate.stdout }}.tar.gz
+  - copy: src=../mongodump-database-{{ mongodate.stdout }}.tar.gz dest=/home/ec2-user/mongodump-database-{{ mongodate.stdout }}.tar.gz
     when: not production
     #Mongo copy
 
-  - copy: src=mysqldump-twothousand-{{ mydate.stdout }}.sql dest=/home/ec2-user/mysqldump-twothousand-{{ mydate.stdout }}.sql
+  - copy: src=../mysqldump-twothousand-{{ mydate.stdout }}.sql dest=/home/ec2-user/mysqldump-twothousand-{{ mydate.stdout }}.sql
     when: not production
     #MySQL copy
 
   - file: path=/home/ec2-user/mongo state=directory
 
-  - unarchive: src=mongodump-database-{{ mongodate.stdout }}.tar.gz dest=/home/ec2-user/mongo
+  - unarchive: src=../mongodump-database-{{ mongodate.stdout }}.tar.gz dest=/home/ec2-user/mongo
 
   - name: Restore MongoDB Comments
-    command: mongorestore -u {{ mongo_user }} -p {{ mongo_pass }} --db database --dbpath /var/lib/mongo /home/ec2-user/mongo
+    command: mongorestore -u {{ mongo_user }} -p {{ mongo_pass }} --db database --host 127.0.0.1 --port 27017 /home/ec2-user/mongo
 
-  - name: Restore MySQL
-    mysql_db: login_user=twothousand login_password=TT99** name=twothousand state=import target=/home/ec2-user/mysqldump-twothousand-{{ mydate.stdout }}.sql
+  - name: Make the DB
+    mysql_db: login_user=root login_password=TT99!!! db=twothousand state=present
+
+  - name: Restore MySQL    
+    mysql_db: login_user=root login_password=TT99!!! db=twothousand state=import target=/home/ec2-user/mysqldump-twothousand-{{ mydate.stdout }}.sql
+
+  - mysql_user: login_user=root login_password=TT99!!! name={{ mysql_user }} password={{ mysql_pass }} priv=twothousand.*:ALL,GRANT state=present

@@ -5,14 +5,11 @@
   serial: 2
   vars:
     destination: /srv/2000
-    project_repo: 
   tasks:
   - name: Pull in latest 2000
-    git:
-     repo=ssh://git@github.com:TwoThousandTimes/2000.git
-     dest=/srv/2000
-     accept_hostkey=yes
-     force=yes
+    command: git pull
+    args:
+      chdir: "{{ destination }}"
 
   - name: Bower Install (not Bowser)
     command: bower install
