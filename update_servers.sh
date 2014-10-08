@@ -10,13 +10,13 @@ elif [[ "$1" == "B" ]]
 then
 	export GROUP=B
 else
-	echo "Please define if we're updating A or B"
+	echo "Please define if we're changing to and updating to A or B"
 	echo "Note, currently active group is:"
 	python elb_current.py
 	exit
 fi
 
-echo "Updating systems in group $1. If you're sure, press enter"
+echo "Updating and changing to systems in group $1. If you're sure, press enter"
 read
 
 echo "Deregistering Current Group $1 instances (Should be Deregistered anyway)"

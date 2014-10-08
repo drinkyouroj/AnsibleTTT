@@ -32,7 +32,7 @@ class ElbCurrent(object):
         #check to see if the current situation is bad. (mixed between group A and B for whatever reason.)
         for tag in tags:
             if tag != first:
-                print "The instnaces have become mixed between A and B, be sure to take care of that through the AWS console before continuing"
+                print "The instnaces have become mixed between A and B, be sure to take care of that through the AWS console before continuing."
             
 
 ElbCurrent()
