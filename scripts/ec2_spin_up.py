@@ -4,15 +4,19 @@ import sys
 import os
 import argparse
 import re
-from time import time
+import time
 
 import boto.ec2
-import boto.ec2.snapshot
+import boto.ec2.elb
+
+import paramiko
+
 from collections import defaultdict
 
 class Ec2Snapshots(object):
 	def __init__(self):
 		'''Gets all the snapshots'''
+		self.lbname = os.environ['LBNAME']
 		self.ec2 = boto.ec2.connect_to_region("us-west-2")
 		
 		self.chooseAMI()
@@ -77,6 +81,7 @@ class Ec2Snapshots(object):
 
 	def tagHerUp(self):
 		instance = self.new_instance.instances[0]
+		print instance.id
 		status = instance.update()
 		while status == 'pending':
 			time.sleep(10)
@@ -84,6 +89,21 @@ class Ec2Snapshots(object):
 
 		if status == 'running':
 			instance.add_tag('Group', self.group)
+			instance.add_tag('Name', 'WebServer')
+			retry = True
+			while retry:
+				try:
+					instance.update()
+					if len(instance.ip_address) > 0:
+						print instance.ip_address
+						retry = False
+				except:
+					time.sleep(10)
+
+			elb = boto.ec2.elb.connect_to_region('us-west-2')
+			elb.register_instances(self.lbname,[instance.id])
+
+
 
 
 Ec2Snapshots()

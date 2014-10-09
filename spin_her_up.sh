@@ -1,3 +1,4 @@
 #!/bin/bash
 # Spin her up!
-# Arg 1 is for the number of instances you want.  You'll have to select which AMI image you wish to use in a bash select
+export LBNAME=LB1
+python scripts/ec2_spin_up.py
