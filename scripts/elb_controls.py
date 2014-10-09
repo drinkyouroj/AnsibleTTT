@@ -41,12 +41,11 @@ class Ec2Controls(object):
         conn = boto.ec2.connect_to_region("us-west-2")
         self.hosts = {'ec2': [], 'ec2_instances':[]}
 
-        reservations = conn.get_all_instances()
+        reservations = conn.get_all_instances(filters={'tag:Group':[self.group]})
         for res in reservations:
             for inst in res.instances:
-                if 'Group' in inst.tags:
-                    if inst.tags['Group'] == self.group:
-                        self.hosts['ec2_instances'].append(str(inst.id))
+                self.hosts['ec2'].append(str(inst.ip_address))
+                self.hosts['ec2_instances'].append(str(inst.id))
 
         #print json.dumps(self.hosts, sort_keys=True, indent=2)
 

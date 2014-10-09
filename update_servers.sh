@@ -12,7 +12,7 @@ then
 else
 	echo "Please define if we're changing to and updating to A or B"
 	echo "Note, currently active group is:"
-	python elb_current.py
+	python scripts/elb_current.py
 	exit
 fi
 
@@ -20,24 +20,24 @@ echo "Updating and changing to systems in group $1. If you're sure, press enter"
 read
 
 echo "Deregistering Current Group $1 instances (Should be Deregistered anyway)"
-python elb_controls.py --dereg=1
+python scripts/elb_controls.py --dereg=1
 
 echo "Updating Instances"
-ansible-playbook -i ec2.py tasks/update_webservers.yml --private-key=~/.ssh/donkeykong69.pem
+ansible-playbook -i scripts/ec2.py tasks/update_webservers.yml --private-key=donkeykong69.pem
 
 echo "Make sure the system is running okay first. Press enter when you're ready.  Here's the list of IPs and instance ids:"
-python ec2.py
+python scripts/ec2.py
 read
 
 # Register the current group
-python elb_controls.py
+python scripts/elb_controls.py
 
 if [[ "$1" == "A" ]]
 then
 	export GROUP=B
-	python elb_controls.py --dereg=1
+	python scripts/elb_controls.py --dereg=1
 elif [[ "$1" == "B" ]]
 then
 	export GROUP=A
-	python elb_controls.py --dereg=1
+	python scripts/elb_controls.py --dereg=1
 fi

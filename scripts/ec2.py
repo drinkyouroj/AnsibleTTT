@@ -28,13 +28,11 @@ class Ec2Group(object):
         self.parse_cli_args()
         self.hosts = {'ec2': [], 'ec2_instance':[]}
 
-        reservations = conn.get_all_instances()
+        reservations = conn.get_all_instances(filters={'tag:Group':[self.group]})
         for res in reservations:
             for inst in res.instances:
-                if 'Group' in inst.tags and inst.tags['Group'] == self.group:
-                   #print vars(inst)
-                    self.hosts['ec2'].append(str(inst.ip_address))
-                    self.hosts['ec2_instance'].append(str(inst.id))
+                self.hosts['ec2'].append(str(inst.ip_address))
+                self.hosts['ec2_instance'].append(str(inst.id))
 
         print json.dumps(self.hosts, sort_keys=True, indent=2)
 
