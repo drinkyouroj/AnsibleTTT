@@ -18,6 +18,7 @@ class Ec2Snapshots(object):
 	def __init__(self):
 		'''Gets all the snapshots'''
 		self.lbname = os.environ['LBNAME']
+		self.keyname = os.environ['KEYNAME']
 		self.ec2 = boto.ec2.connect_to_region("us-west-2")
 		self.elb = boto.ec2.elb.connect_to_region("us-west-2")
 		self.zones = self.ec2.get_all_zones()		
@@ -88,7 +89,7 @@ class Ec2Snapshots(object):
 									image_id=self.selected_ami,
 									min_count=1,
 									max_count=1,
-									key_name='donkeykong69',
+									key_name=self.keyname,
 									security_groups=[self.security_group],
 									instance_type=self.instance_type,
 									placement=self.availability_zone

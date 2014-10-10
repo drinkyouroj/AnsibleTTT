@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #currently don't have multiple Load Balancers so I'm just setting this statically
-export LBNAME=LB1
+export LBNAME=$(cat elb.txt)
 
 if [[ "$1" == "A" ]]
 then	
@@ -23,7 +23,7 @@ echo "Deregistering Current Group $1 instances (Should be Deregistered anyway)"
 python scripts/elb_controls.py --dereg=1
 
 echo "Updating Instances"
-ansible-playbook -i scripts/ec2.py tasks/update_webservers.yml --private-key=donkeykong69.pem
+ansible-playbook -i scripts/ec2.py tasks/update_webservers.yml --private-key=private_key.pem
 
 echo "Make sure the system is running okay first. Press enter when you're ready.  Here's the list of IPs and instance ids:"
 python scripts/ec2.py

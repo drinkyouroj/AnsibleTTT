@@ -1,7 +1,7 @@
 #!/bin/bash
 #WTF is a party mode?  Its where we put up every web instance A or B and just go like hell.
 
-export LBNAME=LB1
+export LBNAME=$(cat elb.txt)
 
 echo "Please define if we're changing to and updating to A or B"
 echo "Note, currently active group is:"
@@ -22,7 +22,7 @@ read answer
 
 if [[ "$answer" == "Yes" ]]
 then
-	ansible-playbook -i scripts/ec2.py tasks/update_webservers.yml --private-key=~/.ssh/donkeykong69.pem
+	ansible-playbook -i scripts/ec2.py tasks/update_webservers.yml --private-key=private_key.pem
 fi
 
 echo "Group $GROUP going up"
