@@ -8,6 +8,7 @@ import time
 
 import boto.ec2
 import boto.ec2.elb
+import boto.ec2.zone
 
 import paramiko
 
@@ -18,11 +19,14 @@ class Ec2Snapshots(object):
 		'''Gets all the snapshots'''
 		self.lbname = os.environ['LBNAME']
 		self.ec2 = boto.ec2.connect_to_region("us-west-2")
-		
+		self.elb = boto.ec2.elb.connect_to_region("us-west-2")
+		self.zones = self.ec2.get_all_zones()		
+
 		self.chooseAMI()
 		self.chooseSize()
 		self.chooseSecurity()
 		self.chooseGroup()
+		self.chooseZone()
 
 		self.spinHerUp()
 		self.tagHerUp()
@@ -69,6 +73,16 @@ class Ec2Snapshots(object):
 
 		self.group = group
 
+	def chooseZone(self):
+		c=0
+		select_zones = {}
+		for zone in self.zones:
+			c=c+1
+			select_zones[c] = zone.name
+			print c, str(zone.name)
+		choice = int(raw_input('Choose your availability Zones wisely:'))
+		self.availability_zone = select_zones[choice]
+
 	def spinHerUp(self):
 		self.new_instance = self.ec2.run_instances(
 									image_id=self.selected_ami,
@@ -76,7 +90,8 @@ class Ec2Snapshots(object):
 									max_count=1,
 									key_name='donkeykong69',
 									security_groups=[self.security_group],
-									instance_type=self.instance_type
+									instance_type=self.instance_type,
+									placement=self.availability_zone
 									)
 
 	def tagHerUp(self):
@@ -99,9 +114,8 @@ class Ec2Snapshots(object):
 						retry = False
 				except:
 					time.sleep(10)
-
-			elb = boto.ec2.elb.connect_to_region('us-west-2')
-			elb.register_instances(self.lbname,[instance.id])
+			
+			self.elb.register_instances(self.lbname,[instance.id])
 
 
 
