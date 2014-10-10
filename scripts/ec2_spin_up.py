@@ -116,7 +116,14 @@ class Ec2Snapshots(object):
 				except:
 					time.sleep(10)
 			
-			self.elb.register_instances(self.lbname,[instance.id])
+			print "1 Yes"
+			print "2 No"
+			choice = int(raw_input('Do you want to attach this to the LoadBalancer?:'))
+			if choice == 2:
+				print 'Not attached'
+			elif choice == 1:
+				self.elb.register_instances(self.lbname,[instance.id])
+
 
 
 
