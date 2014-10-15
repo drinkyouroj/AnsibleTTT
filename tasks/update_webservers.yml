@@ -2,7 +2,7 @@
 # This playbook is for rolling out code to the servers.
 - hosts: ec2
   remote_user: ec2-user
-  serial: 2
+  serial: 3
   vars:
     destination: /srv/2000
   tasks:

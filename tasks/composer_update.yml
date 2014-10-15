@@ -1,0 +1,12 @@
+---
+# Composer update!
+- hosts: ec2
+  remote_user: ec2-user
+  serial: 3
+  vars:
+    destination: /srv/2000
+  tasks:
+  - name: PHP depenency update
+    command: php composer.phar update --no-scripts
+    args:
+      chdir: "{{ destination }}"

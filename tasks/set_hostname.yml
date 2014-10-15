@@ -1,0 +1,12 @@
+---
+# This playbook is for rolling out code to the servers.
+- hosts: ec2
+  remote_user: ec2-user
+  tasks:
+  - name: rename host
+    command: ./sethostname.sh
+    args:
+      chdir: /home/ec2-user
+  - name: reboot
+    command: sudo reboot
+
