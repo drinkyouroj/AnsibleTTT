@@ -4,9 +4,14 @@
   remote_user: ec2-user
   serial: 3
   vars:
-    destination: /srv/2000
+    destination: /srv/2000/laravel
   tasks:
   - name: PHP depenency update
     command: php composer.phar update --no-scripts
+    args:
+      chdir: "{{ destination }}"
+
+  - name: PHP dump autoload
+    command: php composer.phar dump-autoload
     args:
       chdir: "{{ destination }}"

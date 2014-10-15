@@ -1,7 +1,7 @@
 #!/bin/bash
 #Motha Fuckin Rollback.
 
-export LBNAME=LB1
+export LBNAME=$(cat elb.txt)
 
 echo "Rollin Rollin Roll back"
 echo "Note, currently active group is:"
