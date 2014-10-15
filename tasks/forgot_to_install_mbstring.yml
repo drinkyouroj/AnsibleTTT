@@ -1,0 +1,8 @@
+---
+# I'm stupid and forgot to install mbstring
+- hosts: ec2
+  remote_user: ec2-user
+  serial: 3
+  tasks:
+  - name: Yum install php55-mbstring
+    command: sudo yum install -y php55-mbstring
