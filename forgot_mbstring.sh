@@ -1,5 +1,5 @@
 #!/bin/bash
-#Motha Fuckin Rollback.
+#Install MBstring and do the dance!
 
 export LBNAME=$(cat elb.txt)
 

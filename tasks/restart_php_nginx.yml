@@ -4,7 +4,7 @@
   remote_user: ec2-user
   serial: 3
   tasks:
-  - name: Yum install php55-mbstring
-    command: sudo yum install -y php55-mbstring
   - name: restart php-fpm
     command: sudo service php-fpm restart
+  - name: restart NGINX
+    command: sudo service nginx restart
