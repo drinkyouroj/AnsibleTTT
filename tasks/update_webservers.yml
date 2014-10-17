@@ -11,6 +11,11 @@
     args:
       chdir: "{{ destination }}"
 
+  - name: Composer dump
+    command: php composer.phar dump-autoload
+    args:
+      chdir: "/srv/2000/laravel"
+
   - name: Bower Install (not Bowser)
     command: bower install
     args:
